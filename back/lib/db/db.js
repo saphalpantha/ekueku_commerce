@@ -33,6 +33,9 @@ const getDb = () => {
     if(_db){
         return _db
     }
+    else{
+        throw new Error('Failed to Connect to Db.')
+    }
 }
 
 

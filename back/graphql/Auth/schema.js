@@ -52,7 +52,6 @@ const userSchema = buildSchema(`
     input LoginInput{
         email:String!
         password:String!
-        user_role:Role
     }
 
     input ForgetPasswordInput{
@@ -77,9 +76,71 @@ const userSchema = buildSchema(`
     type RootQuery{
         hello:String
         fetchAllUsers:[SiteUser]!
-        
+        fetchSingleUser(id:ID!):SiteUser
+        getAllProducts:[Product]
+        getSingleProduct(id:ID!):Product
+        getFeaturedProducts:[Product]
 
     }
+
+    type Promotion{
+        id:ID!
+        name:String!
+        description:String!
+        discount_rate:String!
+        start_date:String!
+        end_date:String!
+    }
+
+    type PromotionCategory{
+        promotion_id:ID!
+        promotion:Promotion
+    }
+
+    type ProductCategory{
+        id : ID!
+        promotion_cateogry:PromotionCategory
+        category_name:String!
+    }
+
+
+    type ProductImage{
+        id:ID!
+        product_image:String
+    }
+
+
+    type ProductDescription{
+        id:ID!
+        description:String
+    }
+
+    type Product{
+        productCategory:ProductCategory
+        title:String!
+        product_item:ProductItem
+        description:[ProductDescription]!
+        product_image:[ProductImage]
+    }
+
+
+
+    type ProductItem{
+        id :ID!
+        SKU:String!
+        qty_in_stock:String!
+        product_image:[ProductImage]!
+        price:String!
+        
+    }
+
+
+
+    type UpdateUserMessage{
+        message:String!
+    }
+
+    
 
     type RootMutation{
         createUser(userInput:SiteUserInput):SiteUser
@@ -87,12 +148,12 @@ const userSchema = buildSchema(`
         forgetPassword(userInput:ForgetPasswordInput):ForgetPasswordMessage
         changePassword(userInput:ChangePasswordInput):User
         
-
     }
     schema{
         query:RootQuery
         mutation:RootMutation
     }
+    
 `)
 
 

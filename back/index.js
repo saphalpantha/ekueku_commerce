@@ -4,9 +4,9 @@ const { connectDb, getDb } = require('./lib/db/db');
 const errorHandle = require('./middleware/errorHandle');
 const { graphqlHTTP } = require('express-graphql');
 const userSchema = require('./graphql/Auth/schema');
+const session = require('express-session')
 
 const  rootResolver = require('./graphql/Auth/resolver')
-
 const dotenv = require('dotenv').config()
 const app = express();
 const server =  http.createServer(app);
@@ -17,13 +17,17 @@ const server =  http.createServer(app);
 
 
 
-
+app.use(session({
+    secret:'xyz',
+    resave:false,
+    saveUninitialized:true,
+}))
 
 
 app.use('/users', async (req,res,next) => {
     const db = getDb()
     const data = await db.query('SELECT * FROM site_users');
-    console.log(data)
+    console.log(data.rows)
     res.status(200).json({msg:data.rows})
 })
 
