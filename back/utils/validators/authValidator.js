@@ -41,8 +41,10 @@ const isUserExists = async (email) => {
     const existingUser = await db.query(
       `SELECT email from site_users where email='${email}'`
     )
-    console.log(existingUser,'exitsitngUser')
-    return true
+    if(existingUser.rows[0].email){
+      return true
+    }
+    return false
   } catch (err) {
     return false
   }
@@ -63,3 +65,18 @@ const changePasswordValidate = (password,newPassword) => {
 }
 
 exports.changePasswordValidate = changePasswordValidate
+
+
+
+const generateResetToken =  () => {
+  return crypto.randomUUID()
+}
+
+exports.generateResetToken = generateResetToken
+
+
+const resetTokenValidator =  async (resetToken, currentTime) => {
+
+}
+
+exports.resetTokenValidator= resetTokenValidator

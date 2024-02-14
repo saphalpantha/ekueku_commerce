@@ -64,7 +64,7 @@ const userSchema = buildSchema(`
         newPassword:String!
     }
     type ForgetPasswordMessage{
-        messsage:String!
+        message:String
     }
 
     type User{
@@ -76,7 +76,7 @@ const userSchema = buildSchema(`
     type RootQuery{
         hello:String
         fetchAllUsers:[SiteUser]!
-        fetchSingleUser(id:ID!):SiteUser
+        fetchSingleUser(id:ID!):SiteUser!
         getAllProducts:[Product]
         getSingleProduct(id:ID!):Product
         getFeaturedProducts:[Product]
@@ -136,18 +136,27 @@ const userSchema = buildSchema(`
 
 
 
+    
     type UpdateUserMessage{
         message:String!
     }
 
-    
+
+    input VerifyTokenInput{
+        token:String!,
+        newPassword:String!,
+
+    }
+    type VerifyTokenMessage{
+        message:String!
+    }
 
     type RootMutation{
         createUser(userInput:SiteUserInput):SiteUser
         loginUser(userInput:LoginInput):User
-        forgetPassword(userInput:ForgetPasswordInput):ForgetPasswordMessage
+        forgetPassword(userInput:ForgetPasswordInput):ForgetPasswordMessage!
         changePassword(userInput:ChangePasswordInput):User
-        
+        verifyToken(userInput:VerifyTokenInput):VerifyTokenMessage
     }
     schema{
         query:RootQuery
