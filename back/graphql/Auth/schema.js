@@ -1,6 +1,6 @@
 const { buildSchema } = require("graphql");
+const userSchema = `
 
-const userSchema = buildSchema(`
 
     enum Role{
         CLIENT
@@ -17,10 +17,10 @@ const userSchema = buildSchema(`
         id:ID!
         unit_number:String
         street_number:String
-        addressline_1:String
-        addressline_2:String
+        address_line1:String
+        address_line2:String
         city:String
-        Region:String
+        region:String
         postal_code:String
         country:Country
 
@@ -31,6 +31,7 @@ const userSchema = buildSchema(`
         address:Address
     }
 
+
     
 
     type SiteUser{
@@ -40,6 +41,7 @@ const userSchema = buildSchema(`
         phone_no:String!
         address:UserAddress
         user_role:Role
+        profile:String!
     }
 
     input SiteUserInput{
@@ -72,69 +74,50 @@ const userSchema = buildSchema(`
         email:String!,
         user_role:Role!   
     }
+    
 
-    type RootQuery{
+    type AuthRootQuery{
         hello:String
         fetchAllUsers:[SiteUser]!
         fetchSingleUser(id:ID!):SiteUser!
-        getAllProducts:[Product]
-        getSingleProduct(id:ID!):Product
-        getFeaturedProducts:[Product]
-
+ 
     }
 
-    type Promotion{
+    
+
+    input UpdateUser_Country_Input{
         id:ID!
-        name:String!
-        description:String!
-        discount_rate:String!
-        start_date:String!
-        end_date:String!
-    }
-
-    type PromotionCategory{
-        promotion_id:ID!
-        promotion:Promotion
-    }
-
-    type ProductCategory{
-        id : ID!
-        promotion_cateogry:PromotionCategory
-        category_name:String!
+        country_name:String
     }
 
 
-    type ProductImage{
+
+    input UpdateUser_Addres_Input{
         id:ID!
-        product_image:String
+        unit_number:String
+        street_number:String
+        address_line1:String
+        address_line2:String
+        city:String
+        region:String
+        postal_code:String
+        country:UpdateUser_Country_Input
+    }
+
+    input UpdateUser_UserAddres_Input{
+        user_id:ID!
+        isDefault:Boolean
+        address:UpdateUser_Addres_Input
     }
 
 
-    type ProductDescription{
-        id:ID!
-        description:String
+    
+    input UpdateUser_Input{
+        email:String!
+        phone_no:String
+        address:UpdateUser_UserAddres_Input
+        user_role:Role
     }
-
-    type Product{
-        productCategory:ProductCategory
-        title:String!
-        product_item:ProductItem
-        description:[ProductDescription]!
-        product_image:[ProductImage]
-    }
-
-
-
-    type ProductItem{
-        id :ID!
-        SKU:String!
-        qty_in_stock:String!
-        product_image:[ProductImage]!
-        price:String!
-        
-    }
-
-
 
     
     type UpdateUserMessage{
@@ -151,20 +134,20 @@ const userSchema = buildSchema(`
         message:String!
     }
 
-    type RootMutation{
+    type AuthRootMutation{
         createUser(userInput:SiteUserInput):SiteUser
         loginUser(userInput:LoginInput):User
         forgetPassword(userInput:ForgetPasswordInput):ForgetPasswordMessage!
         changePassword(userInput:ChangePasswordInput):User
         verifyToken(userInput:VerifyTokenInput):VerifyTokenMessage
+        updateUser(userInput:UpdateUser_Input):SiteUser
+           
     }
-    schema{
-        query:RootQuery
-        mutation:RootMutation
-    }
-    
-`)
 
+
+
+    
+`
 
     
     module.exports = userSchema

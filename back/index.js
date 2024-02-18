@@ -5,15 +5,11 @@ const errorHandle = require('./middleware/errorHandle');
 const { graphqlHTTP } = require('express-graphql');
 const userSchema = require('./graphql/Auth/schema');
 const session = require('express-session')
-
-const  rootResolver = require('./graphql/Auth/resolver')
+const rootSchema = require('./graphql/rootSchema');
+const rootResolver = require('./graphql/rootResolver')
 const dotenv = require('dotenv').config()
 const app = express();
 const server =  http.createServer(app);
-
-
-
-
 
 
 
@@ -32,16 +28,23 @@ app.use('/users', async (req,res,next) => {
 })
 
 
-app.use('/graphql', graphqlHTTP({
-    schema:userSchema,
-    graphiql:true,
-    rootValue:rootResolver
-}))
+
+app.use('/graphql', graphqlHTTP((req,res) => (
+    {
+        schema:rootSchema,
+        rootValue:rootResolver,
+        graphiql:true
+    }
+)))
+
 
 
 
 
 app.use(errorHandle)
+
+
+
 
 connectDb(() => {
     server.listen(5000, () => {
