@@ -38,6 +38,6 @@ EKUEKU_COMMERCE is a modern e-commerce application, similar to Amazon, designed 
 
 ```sh
 git clone https://github.com/your-repo/EKUEKU_COMMERCE.git
-cd EKUEKU_COMMERCE
+cd EKUEKU_COMMERCE/back
 npm install
 npm run dev
