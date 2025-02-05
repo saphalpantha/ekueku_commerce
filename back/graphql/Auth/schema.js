@@ -142,12 +142,7 @@ const userSchema = `
         verifyToken(userInput:VerifyTokenInput):VerifyTokenMessage
         updateUser(userInput:UpdateUser_Input):SiteUser
            
-    }
-
-
-
-    
-`
+    }`
 
     
     module.exports = userSchema

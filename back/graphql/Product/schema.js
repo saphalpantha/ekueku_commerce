@@ -1,6 +1,7 @@
 
 module.exports  = `
 
+
 type Promotion{
     id:ID!
     name:String!
@@ -68,7 +69,7 @@ type Product{
     title:String!
     product_item:ProductItem
     description:[ProductDescription]!
-    product_image:[ProductImage]
+    product_image:String
 }
 
 input ProductInput{
@@ -76,7 +77,7 @@ input ProductInput{
     title:String!
     product_item:ProductItemInput
     description:[ProductDescriptionInput]!
-    product_image:[ProductImageInput]
+    product_banner:String
 }
 
 
@@ -84,7 +85,7 @@ type ProductItem{
     id :ID!
     SKU:String!
     qty_in_stock:String!
-    product_image:[ProductImage]!
+    product_banner:String
     price:String!
     
 }
@@ -113,4 +114,8 @@ type ProductRootMutation{
 }
 
 `
+
+
+
+
 

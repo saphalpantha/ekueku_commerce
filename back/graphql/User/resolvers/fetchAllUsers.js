@@ -5,8 +5,7 @@ const  fetchAllUsers = async(args,req) =>  {
   console.log(req)
     const userSession = req.session.userSes;
     const roleIs = userSession?.role;
-
-
+    
     
     if (roleIs != "ADMIN") {
       throw new ErrorResponse("Not Authenicated", 500);

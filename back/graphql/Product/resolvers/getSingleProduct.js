@@ -1,27 +1,47 @@
-const { getDb } = require("../../../lib/db/db");
+const { eq } = require("drizzle-orm");
+const { getDb, getDbComplex } = require("../../../lib/db/db");
+const { product } = require("../../../migrations/schema");
 const ErrorResponse = require("../../../utils/ErrorResponse");
 
-const  getSingleProduct = async ({ id }, req) => {
-    const singleProductQuery = `select * from product_item  as pi 
-    join product as p on p.id=pi.product_id
-    join product_category as pc on pc.id=p.category_id
-    join variation as v on v.category_id=pc.id
-    join variation_option as vo on vo.variation_id=v.id
-    join promotion_category as pro_c on pro_c.category_id=pc.id
-    join promotion as prm on prm.id=pro_c.promotion_id where id='${id}'`;
+const getSingleProduct = async ({ id }, req) => {
 
-    const db = getDb();
-    try {
-      const response = await db.query(singleProductQuery);
-      if (response.rows.length <= 0) {
-        throw new ErrorResponse("No Products Found",404);
+let response;
+
+const db = getDbComplex()
+try {
+  response = await db.query.product.findMany({
+    where:eq(product.id , id),
+    with:{
+      productItem:true,
+      description:true,
+      productImage:true,
+      productCategory:{
+        with:{
+          promotionCategory:{
+            with:{
+              promotion:true,
+            },
+          },
+
+          variation:true
+        }
       }
-
-      return response.rows[0];
-    } catch (err) {
-      throw new ErrorResponse("Failed to Fetch Product", 504);
     }
+  });
+
+  console.log(response)
+  if (response?.length == 0) {
+    throw new ErrorResponse("No Products Found");
   }
 
+  return response;
+} catch (err) {
+  console.log(err)
+  if(response?.rows?.length === 0){
+    throw new ErrorResponse(err)
+  }
+  throw new ErrorResponse("Failed to Fetch Products", 504);
+}
+};
 
-  exports.getSingleProduct = getSingleProduct
+exports.getSingleProduct = getSingleProduct;

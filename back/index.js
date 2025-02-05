@@ -7,6 +7,7 @@ const userSchema = require('./graphql/Auth/schema');
 const session = require('express-session')
 const rootSchema = require('./graphql/rootSchema');
 const rootResolver = require('./graphql/rootResolver')
+
 const dotenv = require('dotenv').config()
 const app = express();
 const server =  http.createServer(app);
@@ -20,12 +21,6 @@ app.use(session({
 }))
 
 
-app.use('/users', async (req,res,next) => {
-    const db = getDb()
-    const data = await db.query('SELECT * FROM site_users');
-    console.log(data.rows)
-    res.status(200).json({msg:data.rows})
-})
 
 
 
@@ -38,10 +33,9 @@ app.use('/graphql', graphqlHTTP((req,res) => (
 )))
 
 
+app.use(errorHandle)    
+    
 
-
-
-app.use(errorHandle)
 
 
 

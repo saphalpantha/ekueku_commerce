@@ -1,24 +1,50 @@
-const { getDb } = require("../../../lib/db/db");
+const { ConsoleLogWriter, eq } = require("drizzle-orm");
+const { getDb, getDbComplex } = require("../../../lib/db/db");
 const ErrorResponse = require("../../../utils/ErrorResponse");
+const { product } = require("../../../migrations/schema");
 
 const  getFeaturedProducts = async (args, req)=> {
-    const featuredProductsQuery = `select * from product_item  as pi 
-    join product as p on p.id=pi.product_id
-    join product_category as pc on pc.id=p.category_id
-    join variation as v on v.category_id=pc.id
-    join variation_option as vo on vo.variation_id=v.id
-    join promotion_category as pro_c on pro_c.category_id=pc.id
-    join promotion as prm on prm.id=pro_c.promotion_id where isFeatured=true`;
+  
 
-    const db = getDb();
+  
+
+
+    let response;
+
+    const db = getDbComplex()
     try {
-      const response = await db.query(featuredProductsQuery);
-      if (response.rows.length <= 0) {
+      response = await db.query.product.findMany({
+        where:eq(product.featured , true),
+
+        with:{
+          productItem:true,
+          description:true,
+          productImage:true,
+          productCategory:{
+            with:{
+              promotionCategory:{
+                with:{
+                  promotion:true,
+                },
+              },
+
+              variation:true
+            }
+          }
+        }
+      });
+
+      console.log(response)
+      if (response?.length == 0) {
         throw new ErrorResponse("No Products Found");
       }
 
-      return response.rows;
+      return response;
     } catch (err) {
+      console.log(err)
+      if(response?.rows?.length === 0){
+        throw new ErrorResponse(err)
+      }
       throw new ErrorResponse("Failed to Fetch Products", 504);
     }
   }

@@ -4,10 +4,12 @@ const { comparePass } = require("../../../utils/bcrypt");
 const { isLoginUserValid, isUserExists } = require("../../../utils/validators/authValidator");
 
 
-
 const loginUser = async ({ userInput }, req) =>  {
     
-    const { email, password } = userInput;
+    const { email, password , role } = userInput;
+
+
+
     const errorResults = isLoginUserValid(email, password);
     if (errorResults.length != 0) {
       throw new ErrorResponse(errorResults[0].msg),404;
@@ -18,8 +20,10 @@ const loginUser = async ({ userInput }, req) =>  {
     }
     const db = getDb();
     const user = await db.query(
-      `SELECT user_password FROM site_users where email='${email}'`
+      `SELECT * FROM site_users where email='${email}'`
     );
+
+    console.log(user.rows[0])
     const hashedPass = user.rows[0].user_password;
     const isMatched = await comparePass(password, hashedPass);
 
@@ -30,12 +34,15 @@ const loginUser = async ({ userInput }, req) =>  {
     req.session.userSes = {
       isLoggedIn: true,
       email: email,
-      role: "CLIENT",
+      user_id:user?.rows[0]?.user_id,
+      role: user?.rows[0].user_role
     };
     // jwt sign in / and verify
+    console.log(req.session.userSes)
     return {
         
-       userInput
+       ...userInput,
+       user_id:user?.rows[0].user_id
         
     };
   }

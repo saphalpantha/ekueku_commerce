@@ -52,7 +52,7 @@ input SiteUserInput{
     email:String!
     password:String!
     phone_no:String!
-    role:String!
+    role:Role!
 }
 
 input LoginInput{
@@ -149,125 +149,273 @@ type AuthRootMutation{
 }
 
 
+
+type ProductVariation{
+    id:ID
+    variation_option:[ProductVariation_Option]
+    category_id:ID
+    name:String
+}
+
+type ProductVariation_Option{
+    id:ID
+    variation_id:ID
+    value:String
+}
+
+
+input ProductVariation_Input{
+    id:ID
+    variation_option:[ProductVariation_Option_Input]
+    category_id:ID 
+    name:String
+}
+
+input ProductVariation_Option_Input{
+    id:ID
+    variation_id:ID
+    value:String    
+}
+
+
 type Promotion{
-    id:ID!
-    name:String!
-    description:String!
-    discount_rate:String!
-    start_date:String!
-    end_date:String!
+    id:ID
+    name:String
+    description:String
+    discount_rate:String
+    start_date:String
+    end_date:String
 }
 
 input PromotionInput{
-    id:ID!
-    name:String!
-    description:String!
-    discount_rate:String!
-    start_date:String!
-    end_date:String!
+    id:ID
+    name:String
+    description:String
+    discount_rate:String
+    start_date:String
+    end_date:String
 }
 
 type PromotionCategory{
-    promotion_id:ID!
+    promotion_id:ID
     promotion:Promotion
 }
 
 input PromotionCategoryInput{
-    promotion_id:ID!
+    promotion_id:ID
     promotion:PromotionInput
 }
 
 type ProductCategory{
-    id : ID!
-    promotion_cateogry:PromotionCategory
-    category_name:String!
+    id : ID
+    variation:[ProductVariation]
+    promotion_category:PromotionCategory
+    category_name:String
 }
 
+
 input ProductCategoryInput{
-    id : ID!
-    promotion_cateogry:PromotionCategoryInput
-    category_name:String!
+    id : ID
+    variation:[ProductVariation_Input]
+    promotion_category:PromotionCategoryInput
+    category_name:String
 }
 
 
 type ProductImage{
-    id:ID!
+    id:ID
     product_image:String
 }
 
 input ProductImageInput{
-    id:ID!
+    id:ID
     product_image:String
 }
 
 type ProductDescription{
-    id:ID!
+    id:ID
     description:String
 }
 
 input ProductDescriptionInput{
-    id:ID!
+    id:ID
     description:String
 }
 
 
 type Product{
+    id:ID
     productCategory:ProductCategory
-    title:String!
+    title:String
     product_item:ProductItem
-    description:[ProductDescription]!
-    product_image:[ProductImage]
+    description:[ProductDescription]
+    featured:Boolean
+    product_banner:String
 }
 
+
+
 input ProductInput{
+    id:ID
     productCategory:ProductCategoryInput
-    title:String!
+    title:String
     product_item:ProductItemInput
-    description:[ProductDescriptionInput]!
-    product_image:[ProductImageInput]
+    description:[ProductDescriptionInput]
+    featured:Boolean
+    product_banner:String!
 }
 
 
 type ProductItem{
-    id :ID!
-    SKU:String!
-    qty_in_stock:String!
-    product_image:[ProductImage]!
-    price:String!
+    id :ID
+    SKU:String
+    qty_in_stock:String
+    product_image:[ProductImage]
+    price:String
     
 }
 
 
 input ProductItemInput{
-    id :ID!
-    SKU:String!
-    qty_in_stock:String!
-    product_image:[ProductImageInput]!
-    price:String!
+    id :ID
+    SKU:String
+    qty_in_stock:String
+    product_image:[ProductImageInput]
+    price:String
     
 }
 
 type ProductRootQuery {
     hello:String
     getAllProducts:[Product]
-    getSingleProduct(id:ID!):Product
+    getSingleProdonuct(id:ID):Product
     getFeaturedProducts:[Product]
-
 }
 
 type ProductRootMutation{
     createProduct(userInput:ProductInput):Product
+    
         
 }
 
+
+
+
+
+
+
+input RemoveInput{
+    id:ID,
+    prodId:ID,
+}
+
+
+
+
 type RootQuery{
     getAllProducts:[Product]
-    getSingleProduct(id:ID!):Product
+    getSingleProduct(id:ID):Product
     getFeaturedProducts:[Product]
     hello:String
+    getCartItems(id:ID):shoppingCart
     fetchAllUsers:[SiteUser]!
-    fetchSingleUser(id:ID!):SiteUser!
+
+    fetchReviews(id:ID):[Review]
+
 }
+
+type RemoveMessage{
+    message:String
+}
+
+type CartCreatedMessage{
+    message:String
+}
+
+input AddToCart{
+    id:ID,
+    prodId:ID,
+    qty:String,
+}
+
+type AddedMessage{
+    message:String
+}
+
+type UserDeletedMsg{
+    message:String
+}
+
+type ProductDeletedMsg{
+    message:String
+}
+
+
+type Review{
+    id:ID
+    user_id:ID
+    ordered_product_id:ID,
+    rating_value:String
+    comment:String
+}
+
+
+input ReviewInput{
+    id:ID
+    user_id:ID
+    ordered_product_id:ID,
+    rating_value:String
+    comment:String
+}
+
+type ReviewMessage{
+    message:String
+}
+
+
+
+type CheckoutMessage{
+    message:String
+    pay_url:String
+    redirect_url:String
+}
+
+type shoppingCartItem{
+    id:ID
+    cart_id:ID
+    product:Product
+    qty:String
+}
+
+type shoppingCart{
+    id:ID,
+    cart_item:[shoppingCartItem]
+    
+}
+
+
+input shoppingCartItemInp{
+    id:ID
+    cart_id:ID
+    product_item_id:ID
+    qty:String
+}
+
+input shoppingCartInp{
+    id:ID
+    user_id:ID
+    cart_item:shoppingCartItemInp
+}
+
+
+type PaymentIntent{
+    cart:shoppingCart
+    
+}
+
+
+
+
 
 type RootMutation{
     createProduct(userInput:ProductInput):Product
@@ -277,6 +425,15 @@ type RootMutation{
     changePassword(userInput:ChangePasswordInput):User
     verifyToken(userInput:VerifyTokenInput):VerifyTokenMessage
     updateUser(userInput:UpdateUser_Input):SiteUser
+    createCart(userInput:shoppingCartInp):CartCreatedMessage
+    removeFromCart(userInput:RemoveInput):RemoveMessage
+    addToCart(userInput:AddToCart):AddedMessage,
+    deleteUser(id:ID):UserDeletedMsg
+    deleteProduct(id:ID):ProductDeletedMsg
+    createReview(userInput:ReviewInput):ReviewMessage
+    updateReview(userInput:ReviewInput):ReviewMessage
+    deleteReview(id:ID):ReviewMessage
+    checkoutSession(id:ID):CheckoutMessage
 }
 
 
@@ -285,15 +442,8 @@ schema{
     query:RootQuery,
     mutation:RootMutation
 }
-
-
 `)
 
 module.exports = rootSchema
 
 
-
-
-
-
- 

@@ -6,11 +6,12 @@ const { isCreateUserValid, isUserExists } = require("../../../utils/validators/a
 const  createUser = async ({ userInput }, req) => {
     const uuid = require('uuid')
     const userSession = req.session.userSes;
-    const roleIs = userSession.role;
+    const roleIs = userSession?.role;
     if (roleIs === "CLIENT" || roleIs === "SELLER") {
       throw new ErrorResponse("You Are Logged In.Try again by Signing Out!");
     }
 
+    console.log(userInput)
     const { email, password, role, phone_no } = userInput;
     // validation
     const errorResults = isCreateUserValid(email, password, role, phone_no);
@@ -27,7 +28,7 @@ const  createUser = async ({ userInput }, req) => {
     const db = getDb();
     try {
       const results = await db.query(
-        `INSERT into site_users values('${userId}','${email}', '${phone_no}', '${hashedPassword}' , '${role}', '')`
+        `INSERT into site_users values('${userId}','${email}', '${phone_no}', '${hashedPassword}' , '${role}')`
       );
       console.log(results);
     } catch (err) {
